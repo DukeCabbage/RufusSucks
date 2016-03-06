@@ -30,14 +30,22 @@ public class ScrollingActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_main);
+        final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_main);
         mRecyclerView.setHasFixedSize(true);
 
         // use a linear layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // specify an adapter (see also next example)
-        mRecyclerView.setAdapter(new MyAdapter(Cheeses.shortStrings));
+        mRecyclerView.setAdapter(new MyAdapter(Cheeses.sLongStrings));
+
+
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                findViewById(R.id.ll_container).requestFocus();
+            }
+        });
     }
 
     public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
