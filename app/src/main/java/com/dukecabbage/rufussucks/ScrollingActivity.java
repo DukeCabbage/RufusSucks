@@ -3,6 +3,7 @@ package com.dukecabbage.rufussucks;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -22,30 +23,33 @@ public class ScrollingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+        fab.setOnClickListener((View view) ->
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+                        .setAction("Action", null).show()
+        );
 
         final RecyclerView mRecyclerView = (RecyclerView) findViewById(R.id.rv_main);
         mRecyclerView.setHasFixedSize(true);
-
-        // use a linear layout manager
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        // specify an adapter (see also next example)
         mRecyclerView.setAdapter(new MyAdapter(Cheeses.sLongStrings));
 
+        // Scroll to top
+        mRecyclerView.post( () -> findViewById(R.id.ll_container).requestFocus());
 
-        mRecyclerView.post(new Runnable() {
+        mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void run() {
-                findViewById(R.id.ll_container).requestFocus();
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int lastPos = ((LinearLayoutManager) mRecyclerView.getLayoutManager()).findLastCompletelyVisibleItemPosition();
+                recyclerView.setNestedScrollingEnabled((lastPos + 1) != mRecyclerView.getAdapter().getItemCount());
             }
         });
+
+        final NestedScrollView scrollView = (NestedScrollView) findViewById(R.id.scroll_view);
+        scrollView.setOnScrollChangeListener(
+                (NestedScrollView v, int scrollX, int scrollY, int oldScrollX, int oldScrollY) -> mRecyclerView.setNestedScrollingEnabled(true)
+            );
+
     }
 
     public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
